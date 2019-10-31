@@ -1,0 +1,70 @@
+body {
+	background-color: black;
+	background-image: url(/Camagru/Public/imgs/bg.jpg);
+	background-size: 100%;
+}
+
+header {
+	background-color: whitesmoke;
+	margin-bottom: 20px;
+	display: block;
+	width: 100%;
+}
+
+.logo {
+	display: block;
+	margin: 0 auto;
+}
+
+.cam {
+	width: 10%;
+	position: fixed;
+	top: 10px;
+	left: 10px;
+}
+
+.descp {
+	width: 80%;
+	margin: 0 auto;
+	margin-bottom: 10px;;
+}
+
+.like {
+	width: 30px;
+	color: red;
+	margin-left: 20px;
+	margin-right: 10px;
+}
+
+.nLikes {
+	font-size: 20px;
+	display: inline;
+
+}
+
+.p_pic {
+	width: 50px;
+	display: inline-block;
+	border-radius: 25px;
+	margin: 5px 10px;
+}
+
+h3 {
+	display: inline-block;
+}
+
+.post {
+	background-color: whitesmoke;
+	width: 75%;
+	box-shadow: 5px;
+	border-radius: 8%;
+	padding: 10px;
+	margin: 10px auto
+}
+
+.pic {
+	width: 80%;
+	margin: 5px auto;
+	display: block;
+	border-radius: 5%;
+}
