@@ -8,6 +8,7 @@
 	background-color: black;
 	background-image: url(/Camagru/Public/imgs/bg.jpg);
 	background-size: 100%;
+	margin-top: 11vh;
 }
 
 .try {
@@ -33,7 +34,7 @@ form, .form {
 header {
 	background-color: whitesmoke;
 	margin-bottom: 20px;
-	display: relative;
+	position: fixed;
 	top: 0;
 	width: 100%;
 	height: 10vh;
@@ -144,14 +145,44 @@ h3 {
 #reset {
 	display: none;
 }
+
+#video {
+	transform: rotateY(180deg);
+    -webkit-transform:rotateY(180deg); /* Safari and Chrome */
+    -moz-transform:rotateY(180deg); 
+}
+
+.center {
+	margin: 0 auto;
+	text-align: center;
+	display: block;
+}
+
+.wText {
+	color: white;
+}
+
+.uBar {
+	width: 10vw;
+	text-align: center;
+	position: fixed;
+	top: 3vh;
+	right: 2vw;
+	background-color: grey;
+	border-radius: 1.5vh;
+	height: 3vh 
+}
 	</style>
 </head>
 
 <body>
 <header>
 	
-	<a href="http://localhost:8080/Camagru/Public/feed/post"><img class='cam' src='/Camagru/Public/imgs/post.png'></a>
-	<img class='logo' src='/Camagru/Public/imgs/logo.png'>
+	<a href="<?=WEBROOT?>Public/feed/post"><img class='cam' src='/Camagru/Public/imgs/post.png'></a>
+	<a href="<?=WEBROOT?>Public/feed/index"><img class='logo' src='/Camagru/Public/imgs/logo.png'></a>
+	<div class="wText uBar">
+		<?php require_once ROOT."Views/Auth/userB.php";?>
+	</div>
 </header>
 <main role="main" class="container">
     <div class="starter-template">

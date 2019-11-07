@@ -27,11 +27,9 @@ class authController extends Controller
 				$auth= new authModel();
 				if ($auth->login($userArr))
 				{
-					echo 'Yes';
-					header("");
+					header("loaction: ".WEBROOT."Public/feed/index");
 				} else
 				{
-					echo 'NO';
 					$error="Username/Email or Password is incorrect";
 				}
 			}
@@ -44,7 +42,7 @@ class authController extends Controller
 		require(ROOT . 'Models/authModel.php');
 		$auth= new authModel();
 		$auth->logout();
-		header("Location :login");
+		header("Location: ".WEBROOT."Public/auth/login");
 	}
 
 	function register()
@@ -117,9 +115,16 @@ class authController extends Controller
 			}
 			if (!(isset($this->vars['erN']) || isset($this->vars['erS'])  || isset($this->vars['erUN'])  || isset($this->vars['erUN'])  || isset($this->vars['erE'])))
 			{
+				try{
 				$this->secure_form($userArr);
 				$auth->register($userArr);
-				// header("location: google.com");
+				require(ROOT . 'Models/emailModel.php');
+				$email= new emailModel();
+				$email->verify($userArr);
+				//header("Location: ".WEBROOT."Public/auth/login");
+				} catch(PDOException $e) {
+					echo $e->getMessage();
+				}
 			}
 		}
 		$this->render('register');

@@ -34,5 +34,7 @@
 		<label for="pass">Confirm Password</label>
 		<input type="password" class="form-control" id="Cpass" name="Cpass">
 	</div>
-	<button type="submit" class="btn btn-primary">Register</button>
+	<button type="submit" class="btn center btn-primary">Register</button>
+	<a class="center" href="<?=WEBROOT?>Public/auth/login">Already have an account LOGIN</a>
+
 </form>

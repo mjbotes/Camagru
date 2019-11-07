@@ -43,6 +43,7 @@ class authModel extends Model
 			session_start();
 			$_SESSION['isLogin']=true;
 			$_SESSION['userID'] = $res['user_id'];
+			$_SESSION['uN'] = $res['userN'];
 			return TRUE;
 		}
 		return FALSE;
@@ -54,13 +55,14 @@ class authModel extends Model
 		try
 		{
 			$req = Database::getBdd()->prepare($sql);
-			return $req->execute([
+			$req->execute([
 				'userN' => $userArr['userN'],
 				'email' => $userArr['email'],
 				'uname' => $userArr['name'],
 				'sName' => $userArr['sname'],
 				'hPass' => password_hash($userArr['pass'], PASSWORD_DEFAULT)
 			]);
+			
 		}
 		catch(PDOException $e)
 		{

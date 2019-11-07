@@ -10,5 +10,8 @@
         <label for="pass">Password</label>
         <input type="password" class="form-control" id="pass" name="pass">
     </div>
-    <button type="submit" class="btn btn-primary">Login</button>
+    <button type="submit" class="btn center btn-primary">Login</button>
+	<br />
+	<a class="center" href="<?=WEBROOT?>Public/auth/forgotP">FORGOT PASSWORD</a> | 
+	<a class="center" href="<?=WEBROOT?>Public/auth/register">REGISTER</a>
 </form>

@@ -66,22 +66,6 @@
 			}
 		}
 
-		public function delete($p_id)
-		{
-			try
-			{
-				$sql = "DELETE FROM feed WHERE post_id=:p;";
-				$req = Database::getBdd()->prepare($sql);
-				$res = $req->execute([
-					'p' => $p_id
-				]);
-			}
-			catch(PDOException $e)
-			{
-				echo "A thing went wrong: ".$e->getMessage();
-			}
-		}
-
 		public function like($p_id)
 		{
 			session_start();
@@ -133,7 +117,7 @@
 		{
 			try
 			{
-				$sql = 'SELECT u.`p_pic`, `feed`.`post_id`, u.`userN`, `feed`.`post`, `feed`.`img_t`, count(*) - 1 
+				$sql = 'SELECT u.`p_pic`, u.`user_id`, `feed`.`post_id`, u.`userN`, `feed`.`post`, `feed`.`img_t`, count(*) - 1 
 					AS likes FROM `feed`
 					LEFT JOIN `likes` AS l on l.`post_id` = `feed`.`post_id` 
 					JOIN `users` AS u on u.`user_id` = `feed`.`user_id`
@@ -162,6 +146,56 @@
 					'p' => $pID
 				]);
 				return $req->fetchAll();
+			}
+			catch(PDOException $e)
+			{
+				echo "A thing went wrong: ".$e->getMessage();
+			}
+		}
+
+		private function deleteComments($pID)
+		{
+			try
+			{
+				$sql = 'DELETE FROM `comment` WHERE `post_id`=:p';
+				$req = Database::getBdd()->prepare($sql);
+				$req->execute([
+					'p' => $pID
+				]);
+			}
+			catch(PDOException $e)
+			{
+				echo "A thing went wrong: ".$e->getMessage();
+			}
+		}
+
+		public function deletePost($pID)
+		{
+			try
+			{
+				$this->deleteComments($pID);
+				$sql = 'DELETE FROM feed WHERE `post_id`=:p';
+				$req = Database::getBdd()->prepare($sql);
+				$req->execute([
+					'p' => $pID
+				]);
+			}
+			catch(PDOException $e)
+			{
+				echo "A thing went wrong: ".$e->getMessage();
+			}
+		}
+
+		public function caption($pID, $caption)
+		{
+			try
+			{
+				$sql = 'UPDATE `feed` SET `post`=:c WHERE `post_id`=:p';
+				$req = Database::getBdd()->prepare($sql);
+				$req->execute([
+					'p' => $pID,
+					'c' => $caption
+				]);
 			}
 			catch(PDOException $e)
 			{

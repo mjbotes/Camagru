@@ -41,8 +41,7 @@ class feedController extends Controller
 			$sucess = file_put_contents($file, $stiData);
 			if (!$sucess)
 			{
-				echo "ohh FUCK";
-				$feed->delete($pID);				
+				$feed->deletePost($pID);				
 			} else
 			{
 				echo "upload Sucess";
@@ -57,7 +56,13 @@ class feedController extends Controller
 		$feed= new feedModel();
 		$pDet = $feed->getPost($pID);
 		$pCom = $feed->getComm($pID);
-		$d = array('v' => $pDet, 'com' => $pCom);
+		$owner = FALSE;
+		session_start();
+		if ($_SESSION['userID'] === $pDet['user_id'])
+		{
+			$owner = TRUE;
+		}
+		$d = array('v' => $pDet, 'com' => $pCom, 'owner' => $owner);
 		$this->set($d);
 		$this->render("viewPost");
 		if (isset($_SERVER["REQUEST_METHOD"]) && $_SERVER["REQUEST_METHOD"] === "POST")
@@ -65,6 +70,47 @@ class feedController extends Controller
 			$feed->comment($pID, $_POST["comment"]);
 			header ("location: ".WEBROOT."Public/feed/postV/".$pID);
 		}
+		// if (isset($_SERVER["REQUEST_METHOD"]) && $_SERVER["REQUEST_METHOD"] === "GET")
+		// {
+		// 	if ($_SESSION["isLogin"] === TRUE)
+		// 	{
+		// 		$owner = FALSE;
+		// 		if ($_SESSION['userID'] === $pDet['user_id'])
+		// 		{
+		// 			$owner = TRUE;
+		// 			echo "here";
+		// 		}
+		// 		if ($owner === TRUE)
+		// 		{
+		// 			$feed->caption($pID, $_GET["caption"]);
+		// 			header("location: ".WEBROOT."Public/feed/index");
+		// 		}
+		// 	}
+		// 	header ("location: ".WEBROOT."Public/feed/postV/".$pID);
+		// }
+	}
+
+	function delete($params)
+	{
+		session_start();
+		if ($_SESSION["isLogin"] === TRUE)
+		{
+			$pID = $params;
+			require(ROOT . 'Models/feedModel.php');
+			$feed= new feedModel();
+			$pDet = $feed->getPost($pID);
+			$owner = FALSE;
+			if ($_SESSION['userID'] === $pDet['user_id'])
+			{
+				$owner = TRUE;
+				echo "here";
+			}
+			if ($owner === TRUE)
+			{
+				$feed->deletePost($pID);
+			}
+		}
+		header("location: ".WEBROOT."Public/feed/index");
 	}
 }
 
