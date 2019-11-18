@@ -92,7 +92,7 @@ function addImg(img) {
 	var str = '../imgs/stickers/'
 	  base_image.src = str.concat(img);
 	  s.push(img);
-  	context.drawImage(base_image, 60, 60);
+  	context.drawImage(base_image, 0, 0, 100, 100);
 }
 
 function reset(){

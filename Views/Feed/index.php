@@ -1,3 +1,4 @@
+<div id="posts">
 <?php
 	$res = $this->vars['posts'];
 	foreach ($res as $row => $link) {
@@ -21,4 +22,13 @@
 <?php
 	}
 ?>
+<div class="ajax-loader text-center">
+        <img src="<?=WEBROOT?>Public/imgs/LoaderIcon.gif"> Loading more posts...
+</div>
+</div>
+<script type="text/javascript">
+	<?php 
+		require_once ROOT."Public/incl/js/feed.js";
+	?>
+</script>
 

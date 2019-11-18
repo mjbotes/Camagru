@@ -129,6 +129,28 @@ class authController extends Controller
 		}
 		$this->render('register');
 	}
+
+		public function password($param)
+		{
+			if (isset($_SERVER["REQUEST_METHOD"]) && $_SERVER["REQUEST_METHOD"] === "POST")
+			{
+				require(ROOT . 'Models/authModel.php');
+				$auth= new authModel();
+				$auth->changePass();
+			}
+			$this->render("password");
+		}
+
+		public function account()
+		{
+			if (isset($_SERVER["REQUEST_METHOD"]) && $_SERVER["REQUEST_METHOD"] === "POST")
+			{
+				require(ROOT . 'Models/authModel.php');
+				$auth= new authModel();
+				$auth->changePass();
+			}
+			$this->render("account");
+		}		
 }
 
 ?>

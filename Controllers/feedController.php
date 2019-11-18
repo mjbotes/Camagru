@@ -12,6 +12,12 @@ class feedController extends Controller
 		$d = array('posts' => $feed->load($cIndex));
 		$this->set($d);
 		$this->render('index');
+		$i = 1;
+		if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_MEHOD'] === "POST")
+		{
+			$feed->loadP($i * 5);
+			$i++;
+		}
 	}
 
 	function post()
@@ -33,20 +39,28 @@ class feedController extends Controller
 			$sti = str_replace('data:image/png;base64,', '', $sti);
 			$sti = str_replace(' ', '+', $sti);
 			$imgData = base64_decode($img);
+			$imgIMG = imagecreatefromstring($imgData);
 			$stiData = base64_decode($sti);
+			$stiIMG = imagecreatefromstring($stiData);
 			$w = imagesx ($imgData);
-			$h = imagesy ($imgData);
-			imagecopymerge($imgData, $stiData, 0, 0, 0, 0, $x, $h, 100);
+			$h = imagesy ($imgData);;
 			$file = ROOT . "Public/imgs/posts/" . $pID .'.png';
-			$sucess = file_put_contents($file, $stiData);
-			if (!$sucess)
-			{
-				$feed->deletePost($pID);				
-			} else
-			{
-				echo "upload Sucess";
-			}
+			imagealphablending($imgIMG, true);
+			imagesavealpha($imgIMG, true);
+			imagesavealpha($stiIMG, true);
+			$w = imagesx ($imgIMG);
+			$h = imagesy ($imgIMG);
+			imagecopy($imgIMG, $stiIMG, 0, 0, 0, 0, $w, $h);
+			imagePng($imgIMG, $file);
+			echo "upload Sucess";
 		}
+	}
+
+	function loadP($i)
+	{
+		require(ROOT . 'Models/feedModel.php');
+		$feed= new feedModel();
+		$feed->loadP($i * 5);
 	}
 
 	function postV($params)

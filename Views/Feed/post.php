@@ -1,7 +1,7 @@
 <div class="form">
 <div class="try">
-	<video id="video" autoplay width="640" hieght="480"></video>
 	<div class="wrapper">
+	<video id="video" autoplay width="640" hieght="480"></video>
 	<canvas display="none" id="view" class="view"></canvas>
 	<canvas display="none" id="viewS" class="viewS"></canvas>
 	</div>

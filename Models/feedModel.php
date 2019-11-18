@@ -2,6 +2,33 @@
 
 	class feedModel extends Model
 	{
+		public function loadUser($start = 0, $userID)
+		{
+			try
+			{
+				if ($start != 0)
+				{
+					$sql = 'SELECT `post_id`, `post`
+					FROM `feed` WHERE `user_id` = :u ORDER BY `time` LIMIT 18';
+					$req = Database::getBdd()->prepare($sql);
+					$req->execute([
+						'st' => $start,
+						'u' => $userID
+					 ]);
+				} else {
+					$sql = 'SELECT `post_id`, `post` FROM `feed`
+					ORDER BY `time` DESC LIMIT 5';
+					$req = Database::getBdd()->prepare($sql);
+					$req->execute();
+				}
+				return $req->fetchAll();
+			}
+			catch(PDOException $e)
+			{
+				echo "A thing went wrong: ".$e->getMessage();
+			}
+		}
+
 		public function load($start)
 		{
 			try
@@ -12,11 +39,11 @@
 					AS likes FROM `feed` 
 					LEFT JOIN `likes` AS l on l.`post_id` = `feed`.`post_id` 
 					JOIN `users` AS u on u.`user_id` = `feed`.`user_id`
-					GROUP BY `feed`.`post_id` ORDER BY `time` DESC offset :st rows LIMIT 5';
+					GROUP BY `feed`.`post_id` ORDER BY `time` LIMIT 5';
 					$req = Database::getBdd()->prepare($sql);
 					$req->execute([
 						'st' => $start
-					]);
+					 ]);
 				} else {
 					$sql = 'SELECT u.`p_pic`, `feed`.`post_id`, u.`userN`, `feed`.`post`, `feed`.`img_t`, count(*) - 1 
 					AS likes FROM `feed` 
