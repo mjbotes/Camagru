@@ -29,8 +29,7 @@ class feedController extends Controller
 		if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER["REQUEST_METHOD"] === "POST")
 		{
 			session_start();
-			$_SESSION["u_id"] = 28;
-			$postA = ['caption' => $_POST['caption'], 'user'=>$_SESSION["u_id"], 'type'=> 'png'];
+			$postA = ['caption' => $_POST['caption'], 'user'=>$_SESSION["userID"], 'type'=> 'png'];
 			$pID = $feed->post($postA);
 			$img = $_POST['imgUrl'];
 			$sti = $_POST['sURL'];
@@ -52,7 +51,18 @@ class feedController extends Controller
 			$h = imagesy ($imgIMG);
 			imagecopy($imgIMG, $stiIMG, 0, 0, 0, 0, $w, $h);
 			imagePng($imgIMG, $file);
-			echo "upload Sucess";
+			echo 'ITS= '.$_POST["p_pic"];
+			if (isset($_POST["p_pic"]))
+			{
+				require(ROOT . 'Models/authModel.php');
+				$auth= new authModel();
+				echo "GOAT";
+				$file = ROOT . "Public/imgs/users/" . $pID .'.png';
+				imagePng($imgIMG, $file);
+				$auth->setProfileP($pID);
+				echo "GG";
+			}
+			//header ("location: ".WEBROOT."Public/feed/index");
 		}
 	}
 
@@ -79,29 +89,29 @@ class feedController extends Controller
 		$d = array('v' => $pDet, 'com' => $pCom, 'owner' => $owner);
 		$this->set($d);
 		$this->render("viewPost");
-		if (isset($_SERVER["REQUEST_METHOD"]) && $_SERVER["REQUEST_METHOD"] === "POST")
+		if (isset($_SERVER["REQUEST_METHOD"]) && ($_SERVER["REQUEST_METHOD"] === "POST"))
 		{
+			echo "here";
+			if (isset($_POST["like"])){
+				echo "here";
+				$feed->like($_POST["p_id"]);
+				echo "here";
+			}else{
+				echo "bye";
 			$feed->comment($pID, $_POST["comment"]);
 			header ("location: ".WEBROOT."Public/feed/postV/".$pID);
+			}
 		}
-		// if (isset($_SERVER["REQUEST_METHOD"]) && $_SERVER["REQUEST_METHOD"] === "GET")
-		// {
-		// 	if ($_SESSION["isLogin"] === TRUE)
-		// 	{
-		// 		$owner = FALSE;
-		// 		if ($_SESSION['userID'] === $pDet['user_id'])
-		// 		{
-		// 			$owner = TRUE;
-		// 			echo "here";
-		// 		}
-		// 		if ($owner === TRUE)
-		// 		{
-		// 			$feed->caption($pID, $_GET["caption"]);
-		// 			header("location: ".WEBROOT."Public/feed/index");
-		// 		}
-		// 	}
-		// 	header ("location: ".WEBROOT."Public/feed/postV/".$pID);
-		// }
+		if (isset($_SERVER["REQUEST_METHOD"]) && $_SERVER["REQUEST_METHOD"] === "GET")
+		{
+			if ($_SESSION["isLogin"] === TRUE)
+			{
+				if ($owner === TRUE)
+				{
+					$feed->caption($pID, $_GET["caption"]);
+				}
+			}
+		}
 	}
 
 	function delete($params)
@@ -117,7 +127,6 @@ class feedController extends Controller
 			if ($_SESSION['userID'] === $pDet['user_id'])
 			{
 				$owner = TRUE;
-				echo "here";
 			}
 			if ($owner === TRUE)
 			{

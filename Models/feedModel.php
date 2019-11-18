@@ -98,19 +98,46 @@
 			session_start();
 			if (isset($_SESSION["isLogin"]) && $_SESSION["isLogin"] === TRUE)
 			{
-				try
-				{
-					$sql = "INSERT INTO `likes`(`user_id`, `post_id`) VALUES (:u, :p)";
+				echo "PROBLEM";
+				try {
+					$sql = "SELECT count(*) AS nL FROM likes WHERE `user_id`=:u AND post_id=:p";
 					$req = Database::getBdd()->prepare($sql);
-					$res = $req->execute([
+					$req->execute([
 						'u' => $_SESSION['userID'],
 						'p' => $p_id
 					]);
-					return TRUE;
-				}
-				catch(PDOException $e)
+					$lik = $req->fetch();
+					var_dump($lik);
+				} catch(PDOException $e)
 				{
 					echo "A thing went wrong: ".$e->getMessage();
+				}
+				if ($lik['nL'] === "0")
+				{
+					try
+					{
+						echo "MEME";
+						$sql = "INSERT INTO `likes`(`user_id`, `post_id`) VALUES (:u, :p)";
+						$req = Database::getBdd()->prepare($sql);
+						$res = $req->execute([
+							'u' => $_SESSION['userID'],
+							'p' => $p_id
+						]);
+						return TRUE;
+					}
+					catch(PDOException $e)
+					{
+						echo "A thing went wrong: ".$e->getMessage();
+					}
+				}
+				else
+				{
+					$sql = "DELETE FROM likes WHERE `user_id`=:u AND post_id=:p";
+					$req = Database::getBdd()->prepare($sql);
+					$req->execute([
+						'u' => $_SESSION['userID'],
+						'p' => $p_id
+					]);
 				}
 			}
 		}
@@ -124,7 +151,6 @@
 				{
 					$sql = "INSERT INTO `comment`(`user_id`, `post_id`, `comment`) VALUES (:u, :p, :c);";
 					$req = Database::getBdd()->prepare($sql);
-					echo "USER".$_SESSION['userID'];
 					$res = $req->execute([
 						'u' => $_SESSION['userID'],
 						'p' => $p_id,
@@ -144,11 +170,11 @@
 		{
 			try
 			{
-				$sql = 'SELECT u.`p_pic`, u.`user_id`, `feed`.`post_id`, u.`userN`, `feed`.`post`, `feed`.`img_t`, count(*) - 1 
-					AS likes FROM `feed`
-					LEFT JOIN `likes` AS l on l.`post_id` = `feed`.`post_id` 
+				$sql = 'SELECT u.`p_pic`, u.`user_id`, `feed`.`post_id`, u.`userN`, `feed`.`post`, `feed`.`img_t`, l.`like_id`, count(*) - 1 
+					AS liky FROM `feed`
+					left JOIN `likes` AS l on l.`post_id` = `feed`.`post_id` 
 					JOIN `users` AS u on u.`user_id` = `feed`.`user_id`
-					WHERE `feed`.`post_id`=:p GROUP BY `feed`.`post_id`';
+					GROUP BY `feed`.`post_id` WHERE `feed`.`post_id`=:p';
 				$req = Database::getBdd()->prepare($sql);
 				$req->execute([
 					'p' => $pID

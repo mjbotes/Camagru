@@ -7,9 +7,9 @@
 <div class="post">
 	<?php 
 		$p_pic = "default.png";
-		if (isset($link['o_pic']))
+		if (isset($link['p_pic']))
 		{
-			$p_pic = $link['o_pic'];
+			$p_pic = $link['p_pic'];
 		}
 		echo "<img class='p_pic' src='/Camagru/Public/imgs/users/".$p_pic."'><h3>".$link['userN'].'</h3>';
 	?>

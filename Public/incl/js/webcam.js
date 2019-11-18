@@ -113,3 +113,45 @@ function saveImg() {
 	console.log(imgL);
 	imgL.value=imgUrl;
 }
+
+document.getElementById('ftu').onchange = function(e) {
+	var img = new Image();
+	img.src = URL.createObjectURL(this.files[0]);
+	img.onload = draw;
+	img.onerror = failed;
+}
+function draw(){
+	var prev = document.querySelector("#viewS");
+	prev.style.display="block";
+	prev.width=this.width;
+	prev.height=this.height;
+	console.log("YE");
+	var prev = document.querySelector("#view");
+	prev.style.display="block";
+	prev.width=this.width;
+	prev.height=this.height;
+	var context = prev.getContext('2d');
+	context.drawImage(this, 0, 0, 640, 480);
+	var prev = document.querySelector("#video");
+	prev.style.display = "none";
+	var prev = document.querySelector("#recap");
+	prev.style.display="inline-block";
+	var prev = document.querySelector("#reset");
+	prev.style.display="inline-block";
+	var prev = document.querySelector("#cap");
+	prev.style.display="none";
+	var prev = document.querySelector(".dec");
+	prev.style.display="block";
+	var prev = document.querySelector(".wrapper");
+	prev.style.display="contents";
+	var prev = document.querySelector("#post");
+	prev.style.display="block";
+	var prev = document.querySelector("#viewS");
+	prev.style.display="block";
+	var prev = document.querySelector("#view");
+	prev.style.display="block";
+}
+
+function failed() {
+	console.error("The provided file couldn't be loaded as an Image media");
+  }

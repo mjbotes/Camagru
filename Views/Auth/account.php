@@ -1,32 +1,23 @@
 <div class="container emp-profile">
-<form method="post">
-		<div class="row">
-			<div class="col-md-4">
-				<div class="profile-img">
-					<img src="<?=$p_pic?>" alt=""/>
-					<div class="file btn btn-lg btn-primary">
-						Change Photo
-						<input type="file" name="file"/>
-					</div>
+<h1 class="center">Account Mangement</h1>
+				<div class="profile-img thrtyp center">
+					<img src="<?=WEBROOT?>Public/imgs/users/<?php if($p_pic === NULL){echo "default.png";}else{echo $p_pic;}?>" alt=""/>
 				</div>
-			</div>
-			<div class="col-md-6">
-				<div class="profile-head">
-					<h5>
-						<?=$name?>
-					</h5>
-						<ul class="nav nav-tabs" id="myTab" role="tablist">
-							<li class="nav-item">
-								<a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">About</a>
-							</li>
-							<li class="nav-item">
-								<a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Timeline</a>
-							</li>
-						</ul>
-				</div>
-			</div>
-			<div class="col-md-2">
-				<input type="submit" class="profile-edit-btn" name="btnAddMore" value="Edit Profile"/>
+			<div class="col-md-6 center">
+				<form>
+					<legend>Update Details</legend>
+					<label>First Name</label><input class="form-control" type="text" value="<?=$uname?>"><br />
+					<label>Surname</label><input class="form-control" type="text" value="<?=$sname?>"><br />
+					<label>Username</label><input class="form-control" type="text" value="<?=$userN?>"><br />
+					<label>Email</label><input class="form-control" type="text" value="<?=$email?>"><br />
+					<input class="btn center btn-primary" type="submit" value="Update Details">
+				</form>
+				<form>
+					<legend>Update Password</legend>
+					<label>Password</label><input class="form-control" type="password"><br />
+					<label>Confirm Password</label><input class="form-control" type="password"><br />
+					<input class="btn center btn-primary" type="submit" value="Update Password">
+				</form>
 			</div>
 		</div>
 	<form>

@@ -17,6 +17,21 @@ class authModel extends Model
 			echo "A thing went wrong: ".$e->getMessage();
 		}
 	}
+	public function getUserI($user)
+	{
+		try {
+		$sql="SELECT * FROM users WHERE `user_id`=:user;";
+		$req = Database::getBdd()->prepare($sql);
+		$req->execute([
+			'user' => $user
+		]);
+		return $req->fetch();
+		}
+		catch(PDOException $e)
+		{
+			echo "A thing went wrong: ".$e->getMessage();
+		}
+	}
 
 	public function getUserC($user)
 	{
@@ -51,7 +66,7 @@ class authModel extends Model
 
 	public function register($userArr)
 	{
-		$sql = "INSERT INTO `users`(userN, `name`, sname, email, hPass) VALUES (:userN, :uname, :sName, :email, :hPass);";
+		$sql = "INSERT INTO `users`(userN, `uname`, sname, email, hPass) VALUES (:userN, :uname, :sName, :email, :hPass);";
 		try
 		{
 			$req = Database::getBdd()->prepare($sql);
@@ -81,4 +96,21 @@ class authModel extends Model
 		}
 		header("location: /login");
 	}
+
+	public function setProfileP($pid)
+	{
+		try{
+		$sql = 'UPDATE `users` SET `p_pic`=:c WHERE `user_id`=:p';
+		$req = Database::getBdd()->prepare($sql);
+		$req->execute([
+			'p' => $_SESSION["userID"],
+			'c' => $pid.".png"
+		]);
+	}
+	catch(PDOException $e)
+	{
+		echo "A thing went wrong: ".$e->getMessage();
+	}
 }
+}
+?>

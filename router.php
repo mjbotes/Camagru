@@ -6,7 +6,6 @@ class Router
 	static public function parse($url, $request)
 	{
 		$url = trim($url);
-
 		$request->controller = "auth";
 		$request->action = "login";
 		$request->params = [];

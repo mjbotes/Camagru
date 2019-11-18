@@ -143,12 +143,18 @@ class authController extends Controller
 
 		public function account()
 		{
-			if (isset($_SERVER["REQUEST_METHOD"]) && $_SERVER["REQUEST_METHOD"] === "POST")
-			{
-				require(ROOT . 'Models/authModel.php');
-				$auth= new authModel();
-				$auth->changePass();
-			}
+			require(ROOT . 'Models/authModel.php');
+			$auth= new authModel();
+			// if (isset($_SERVER["REQUEST_METHOD"]) && $_SERVER["REQUEST_METHOD"] === "POST")
+			// {
+			// 	$auth->changePass();
+			// }
+			// if (isset($_SERVER["REQUEST_METHOD"]) && $_SERVER["REQUEST_METHOD"] === "GET")
+			// {
+			// 	$auth->changePass();
+			// }
+			session_start();
+			$this->set($auth->getUserI($_SESSION['userID']));
 			$this->render("account");
 		}		
 }

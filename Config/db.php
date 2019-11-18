@@ -16,7 +16,7 @@ class Database
         if(is_null(self::$conn)) {
             self::$conn = new PDO("mysql:host=".self::$server.";dbname=".self::$dbname, self::$user, self::$pass);
 			self::$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-		}
+        }
         return self::$conn;
     }
 }
