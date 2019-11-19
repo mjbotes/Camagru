@@ -11,7 +11,7 @@
 		{
 			$p_pic = $link['p_pic'];
 		}
-		echo "<img class='p_pic' src='/Camagru/Public/imgs/users/".$p_pic."'><h3>".$link['userN'].'</h3>';
+		echo "<img class='p_pic' src='".WEBROOT."Public/imgs/users/".$p_pic."'><h3>".$link['userN'].'</h3>';
 	?>
 	<img class='pic' src=<?php echo WEBROOT."Public/imgs/posts/".$link['post_id'].".".$link['img_t']; ?>>
 	<svg aria-hidden="true" focusable="false" data-prefix="fab" data-icon="gratipay" class="like" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512">
@@ -22,9 +22,6 @@
 <?php
 	}
 ?>
-<div class="ajax-loader text-center">
-        <img src="<?=WEBROOT?>Public/imgs/LoaderIcon.gif"> Loading more posts...
-</div>
 </div>
 <script type="text/javascript">
 	<?php 

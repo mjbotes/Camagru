@@ -29,30 +29,39 @@
 			}
 		}
 
+		public function getLikes($pid)
+		{
+			$sql = 'SELECT post_id, count(*) AS nL FROM likes WHERE `post_id` = :p';
+			$req = Database::getBdd()->prepare($sql);
+			$req->execute([
+				'p' => $pid
+			]);
+			return $req->fetch();
+		}
+
 		public function load($start)
 		{
 			try
 			{
-				if ($start != 0)
+				if ($start === 0)
 				{
-					$sql = 'SELECT u.`p_pic`, `feed`.`post_id`, u.`userN`, `feed`.`post`, `feed`.`img_t`, count(*) - 1 
-					AS likes FROM `feed` 
-					LEFT JOIN `likes` AS l on l.`post_id` = `feed`.`post_id` 
-					JOIN `users` AS u on u.`user_id` = `feed`.`user_id`
-					GROUP BY `feed`.`post_id` ORDER BY `time` LIMIT 5';
-					$req = Database::getBdd()->prepare($sql);
-					$req->execute([
-						'st' => $start
-					 ]);
-				} else {
-					$sql = 'SELECT u.`p_pic`, `feed`.`post_id`, u.`userN`, `feed`.`post`, `feed`.`img_t`, count(*) - 1 
-					AS likes FROM `feed` 
-					LEFT JOIN `likes` AS l on l.`post_id` = `feed`.`post_id` 
-					JOIN `users` AS u on u.`user_id` = `feed`.`user_id`
+					$sql = 'SELECT u.`p_pic`, `feed`.`post_id`, u.`userN`, `feed`.`post`, `feed`.`img_t`,
+					count(l.like_id) AS likes FROM `feed`
+					LEFT JOIN `likes` AS l on l.`post_id` = `feed`.`post_id`
+					JOIN `users` AS u on u.`user_id` = `feed`.`user_id` 
 					GROUP BY `feed`.`post_id` ORDER BY `time` DESC LIMIT 5';
 					$req = Database::getBdd()->prepare($sql);
 					$req->execute();
+				} else {
+					$sql = 'SELECT u.`p_pic`, `feed`.`post_id`, u.`userN`, `feed`.`post`, `feed`.`img_t`,
+					count(l.like_id) AS likes FROM `feed`
+					LEFT JOIN `likes` AS l on l.`post_id` = `feed`.`post_id`
+					JOIN `users` AS u on u.`user_id` = `feed`.`user_id` 
+					GROUP BY `feed`.`post_id` ORDER BY `time` DESC LIMIT '.$start;
+					$req = Database::getBdd()->prepare($sql);
+					$req->execute();
 				}
+
 				return $req->fetchAll();
 			}
 			catch(PDOException $e)
@@ -93,12 +102,22 @@
 			}
 		}
 
+		public function getCid($p_id)
+		{
+			$sql = "SELECT `user_id` FROM `feed` WHERE `post_id`=:p";
+			$req = Database::getBdd()->prepare($sql);
+			$req->execute([
+				'p' => $p_id
+			]);
+			$ret = $req->fetch();
+			return $ret["user_id"];
+		}
+		
 		public function like($p_id)
 		{
 			session_start();
 			if (isset($_SESSION["isLogin"]) && $_SESSION["isLogin"] === TRUE)
 			{
-				echo "PROBLEM";
 				try {
 					$sql = "SELECT count(*) AS nL FROM likes WHERE `user_id`=:u AND post_id=:p";
 					$req = Database::getBdd()->prepare($sql);
@@ -107,7 +126,6 @@
 						'p' => $p_id
 					]);
 					$lik = $req->fetch();
-					var_dump($lik);
 				} catch(PDOException $e)
 				{
 					echo "A thing went wrong: ".$e->getMessage();
@@ -116,14 +134,12 @@
 				{
 					try
 					{
-						echo "MEME";
 						$sql = "INSERT INTO `likes`(`user_id`, `post_id`) VALUES (:u, :p)";
 						$req = Database::getBdd()->prepare($sql);
 						$res = $req->execute([
 							'u' => $_SESSION['userID'],
 							'p' => $p_id
 						]);
-						return TRUE;
 					}
 					catch(PDOException $e)
 					{
@@ -140,6 +156,7 @@
 					]);
 				}
 			}
+			echo "DONE";
 		}
 
 		public function comment($p_id, $comment)
@@ -170,11 +187,10 @@
 		{
 			try
 			{
-				$sql = 'SELECT u.`p_pic`, u.`user_id`, `feed`.`post_id`, u.`userN`, `feed`.`post`, `feed`.`img_t`, l.`like_id`, count(*) - 1 
+				$sql = 'SELECT u.`p_pic`, u.`user_id`, `feed`.`post_id`, u.`userN`, `feed`.`post`, `feed`.`img_t`
 					AS liky FROM `feed`
-					left JOIN `likes` AS l on l.`post_id` = `feed`.`post_id` 
 					JOIN `users` AS u on u.`user_id` = `feed`.`user_id`
-					GROUP BY `feed`.`post_id` WHERE `feed`.`post_id`=:p';
+					WHERE `feed`.`post_id`=:p';
 				$req = Database::getBdd()->prepare($sql);
 				$req->execute([
 					'p' => $pID
@@ -232,6 +248,7 @@
 				$req->execute([
 					'p' => $pID
 				]);
+				unlink(ROOT."Public/imgs/posts/".$pID.".png");
 			}
 			catch(PDOException $e)
 			{

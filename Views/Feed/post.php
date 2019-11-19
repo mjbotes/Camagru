@@ -24,7 +24,7 @@
 		<input type="text" name="caption" id="caption">
 		<label>Profile Picture</label>
 		<input type="checkbox" name="p_pic">
-		<input type="submit" class="btn btn-primary" id="post" onclick="saveImg()">POST PICTURE</button>
+		<input type="submit" class="btn btn-primary postP" id="postP" onclick="saveImg()">POST PICTURE</button>
 </form>
 	</div>
 <script type="text/javascript">

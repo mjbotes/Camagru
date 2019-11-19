@@ -9,26 +9,29 @@ class feedController extends Controller
 		$cIndex=0;
 		require(ROOT . 'Models/feedModel.php');
 		$feed= new feedModel();
-		$d = array('posts' => $feed->load($cIndex));
-		$this->set($d);
-		$this->render('index');
-		$i = 1;
-		if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_MEHOD'] === "POST")
+		$i = 2;
+		$posts = $feed->load($cIndex);
+		if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER["REQUEST_METHOD"] === "POST")
 		{
-			$feed->loadP($i * 5);
+			$posts = $feed->load($i * 5);
 			$i++;
 		}
+		$d = array('posts' => $posts);
+		$this->set($d);
+		$this->render('index');
 	}
 
 	function post()
 	{
 		session_start();
+		if (!(isset($_SESSION['isLogin']) && $_SESSION['isLogin'] === true))
+		{
+			header("location: ".WEBROOT."Public/feed/index");
+		}
 		require(ROOT . 'Models/feedModel.php');
 		$feed= new feedModel();
-		$this->render('post');
 		if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER["REQUEST_METHOD"] === "POST")
 		{
-			session_start();
 			$postA = ['caption' => $_POST['caption'], 'user'=>$_SESSION["userID"], 'type'=> 'png'];
 			$pID = $feed->post($postA);
 			$img = $_POST['imgUrl'];
@@ -51,26 +54,17 @@ class feedController extends Controller
 			$h = imagesy ($imgIMG);
 			imagecopy($imgIMG, $stiIMG, 0, 0, 0, 0, $w, $h);
 			imagePng($imgIMG, $file);
-			echo 'ITS= '.$_POST["p_pic"];
 			if (isset($_POST["p_pic"]))
 			{
 				require(ROOT . 'Models/authModel.php');
 				$auth= new authModel();
-				echo "GOAT";
 				$file = ROOT . "Public/imgs/users/" . $pID .'.png';
 				imagePng($imgIMG, $file);
 				$auth->setProfileP($pID);
-				echo "GG";
 			}
-			//header ("location: ".WEBROOT."Public/feed/index");
+			header("location: /Camagru/Public/feed/index");
 		}
-	}
-
-	function loadP($i)
-	{
-		require(ROOT . 'Models/feedModel.php');
-		$feed= new feedModel();
-		$feed->loadP($i * 5);
+		$this->render('post');
 	}
 
 	function postV($params)
@@ -78,29 +72,21 @@ class feedController extends Controller
 		$pID = $params;
 		require(ROOT . 'Models/feedModel.php');
 		$feed= new feedModel();
-		$pDet = $feed->getPost($pID);
-		$pCom = $feed->getComm($pID);
-		$owner = FALSE;
-		session_start();
-		if ($_SESSION['userID'] === $pDet['user_id'])
-		{
-			$owner = TRUE;
-		}
-		$d = array('v' => $pDet, 'com' => $pCom, 'owner' => $owner);
-		$this->set($d);
-		$this->render("viewPost");
 		if (isset($_SERVER["REQUEST_METHOD"]) && ($_SERVER["REQUEST_METHOD"] === "POST"))
 		{
-			echo "here";
-			if (isset($_POST["like"])){
-				echo "here";
-				$feed->like($_POST["p_id"]);
-				echo "here";
+			$a = array("like" => $_POST['like'], 'p_id' => $_POST["p_id"], "comment" => $_POST["comment"]);
+			$a = $this->secure_form($a);
+			if (isset($a["like"]) && ($a["like"] === "1")){
+				$feed->like($pID);
 			}else{
-				echo "bye";
-			$feed->comment($pID, $_POST["comment"]);
-			header ("location: ".WEBROOT."Public/feed/postV/".$pID);
+				$feed->comment($pID, $a["comment"]);
+				header ("location: ".WEBROOT."Public/feed/postV/".$pID);
 			}
+			require(ROOT . 'Models/emailModel.php');
+			$email= new emailModel();
+			require(ROOT . 'Models/authModel.php');
+			$auth= new authModel();
+			$email->notify($auth->getUserI($feed->getCid($a["p_id"])));
 		}
 		if (isset($_SERVER["REQUEST_METHOD"]) && $_SERVER["REQUEST_METHOD"] === "GET")
 		{
@@ -112,6 +98,18 @@ class feedController extends Controller
 				}
 			}
 		}
+		$pDet = $feed->getPost($pID);
+		$pCom = $feed->getComm($pID);
+		$pLik = $feed->getLikes($pID);
+		$owner = FALSE;
+		session_start();
+		if ($_SESSION['userID'] === $pDet['user_id'])
+		{
+			$owner = TRUE;
+		}
+		$d = array('v' => $pDet, 'com' => $pCom, 'owner' => $owner, 'l' => $pLik);
+		$this->set($d);
+		$this->render("viewPost");
 	}
 
 	function delete($params)

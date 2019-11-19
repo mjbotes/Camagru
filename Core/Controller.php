@@ -27,18 +27,16 @@
 
 		private function secure_input($data)
 		{
-			$data = trim($data);
-			$data = stripslashes($data);
-			$data = htmlspecialchars($data);
-			return $data;
+			return trim(htmlentities($data, ENT_QUOTES, 'UTF-8'));
 		}
 
-		protected function secure_form($form)
+		public function secure_form($form)
 		{
 			foreach ($form as $key => $value)
 			{
 				$form[$key] = $this->secure_input($value);
 			}
+			return $form;
 		}
 
 	}

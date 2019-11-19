@@ -24,7 +24,7 @@
     </div>
 </main>
 <footer>
-
+<img class='fimg center' src='/Camagru/Public/imgs/footer.png'>
 </footer>
 </body>
 </html>

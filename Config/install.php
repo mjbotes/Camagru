@@ -49,8 +49,7 @@ $sql = "CREATE TABLE IF NOT EXISTS feed (
 $sql = "CREATE TABLE IF NOT EXISTS likes (
 	like_id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
 	user_id INT(6) NOT NULL,
-	post_id INT(6) NOT NULL,
-	qty INT(6) UNSIGNED
+	post_id INT(6) NOT NULL
 	)";
 	try {
 	$req = $conn->prepare($sql);
@@ -63,7 +62,7 @@ $sql = "CREATE TABLE IF NOT EXISTS comment (
 	com_id INT(6) NOT NULL AUTO_INCREMENT  PRIMARY KEY,
 	`user_id` INT(6) NOT NULL ,
 	`post_id` INT(6) NOT NULL ,
-	`comment` VARCHAR(30)
+	`comment` VARCHAR(255)
 	)";
 	try{
 		$req = $conn->prepare($sql);

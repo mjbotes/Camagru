@@ -35,7 +35,7 @@ snap.addEventListener("click", function() {
 	video.pause();
 	var prev = document.querySelector(".wrapper");
 	prev.style.display="contents";
-	var prev = document.querySelector("#post");
+	var prev = document.querySelector("#postP");
 	prev.style.display="block";
 	var prev = document.querySelector("#viewS");
 	prev.style.display="block";
@@ -73,7 +73,7 @@ recap.addEventListener("click", function() {
 	prev.style.display="none";
 	var prev = document.querySelector(".wrapper");
 	prev.style.display="none";
-	var prev = document.querySelector("#post");
+	var prev = document.querySelector("#postP");
 	prev.style.display="none";
 	var prev = document.querySelector("#cap");
 	prev.style.display="block";

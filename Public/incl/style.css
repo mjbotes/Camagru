@@ -22,6 +22,18 @@ legend {
 	text-align: center;
 }
 
+footer {
+	background-color: white;
+	position: fixed;
+	bottom: 0;
+	width: 100%;
+}
+
+.fimg {
+	display: block;
+	height: 8vh;
+}
+
 form, .form {
 	background-color: white;
 }

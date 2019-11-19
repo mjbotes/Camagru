@@ -7,7 +7,7 @@ class authController extends Controller
 		session_start();
 		if (isset($_SESSION['isLogin']) && $_SESSION['isLogin'] === true)
 		{
-			header("Location: home");
+			header("location: ".WEBROOT."Public/feed/index");
 		}
 		if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST')
 		{
@@ -25,9 +25,9 @@ class authController extends Controller
 			{
 				require(ROOT . 'Models/authModel.php');
 				$auth= new authModel();
-				if ($auth->login($userArr))
+				if ($auth->login($userArr) === TRUE)
 				{
-					header("loaction: ".WEBROOT."Public/feed/index");
+					header("location: ".WEBROOT."Public/feed/index");
 				} else
 				{
 					$error="Username/Email or Password is incorrect";
@@ -39,6 +39,10 @@ class authController extends Controller
 
 	function logout()
 	{
+		if (isset($_SESSION['isLogin']) && $_SESSION['isLogin'] === true)
+		{
+			header("location: ".WEBROOT."Public/feed/index");
+		}
 		require(ROOT . 'Models/authModel.php');
 		$auth= new authModel();
 		$auth->logout();
@@ -52,7 +56,7 @@ class authController extends Controller
 		session_start();
 		if (isset($_SESSION['isLogin']) && $_SESSION['isLogin'] === true)
 		{
-			header("Location :home");
+			header("location: ".WEBROOT."Public/feed/index");
 		}
 		if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST')
 		{
@@ -121,7 +125,7 @@ class authController extends Controller
 				require(ROOT . 'Models/emailModel.php');
 				$email= new emailModel();
 				$email->verify($userArr);
-				//header("Location: ".WEBROOT."Public/auth/login");
+				header("Location: ".WEBROOT."Public/auth/login");
 				} catch(PDOException $e) {
 					echo $e->getMessage();
 				}
@@ -141,19 +145,162 @@ class authController extends Controller
 			$this->render("password");
 		}
 
+		public function forgotP()
+		{
+			if (isset($_SESSION['isLogin']) && $_SESSION['isLogin'] === true)
+			{
+				header("location: ".WEBROOT."Public/feed/index");
+			}
+			if ($_SERVER["REQUEST_METHOD"] === "POST")
+			{
+				$pass = uniqid();
+				require(ROOT . 'Models/authModel.php');
+				$auth= new authModel();
+				$det = $auth->getUser($_POST["user"]);
+				$hPass = password_hash($pass, PASSWORD_DEFAULT);
+				$a = array("pass" => $hPass);
+				$auth->update($det,$a);
+				require(ROOT . 'Models/emailModel.php');
+				$email= new emailModel();
+				$email->fPass($det,$pass);
+				header("Location: ".WEBROOT."Public/auth/login");
+			}
+			$this->render("forgotP");
+		}
+
 		public function account()
 		{
 			require(ROOT . 'Models/authModel.php');
 			$auth= new authModel();
-			// if (isset($_SERVER["REQUEST_METHOD"]) && $_SERVER["REQUEST_METHOD"] === "POST")
-			// {
-			// 	$auth->changePass();
-			// }
-			// if (isset($_SERVER["REQUEST_METHOD"]) && $_SERVER["REQUEST_METHOD"] === "GET")
-			// {
-			// 	$auth->changePass();
-			// }
 			session_start();
+			$usr = $auth->getUserI($_SESSION["userID"]);
+			if (isset($_SERVER["REQUEST_METHOD"]) && ($_SERVER["REQUEST_METHOD"] === "POST")&& $_POST["up"]==="pas")
+			{
+				$arr = array("pass" => $_POST["pass"], "cpass"=>$_POST["cpass"]);
+				$arr = $this->secure_form($arr);
+				$erP = "";
+				if ($arr["pass"] === $arr["cpass"])
+				{
+					$uppercase = preg_match('@[A-Z]@', $arr["pass"]);
+					$lowercase = preg_match('@[a-z]@', $arr["pass"]);
+					$number = preg_match('@[0-9]@', $arr["pass"]);
+					$special_chars = preg_match('@[^\w]@', $arr["pass"]);
+					if(strlen($arr["pass"]) < 6) {
+						$erP = "<li>Password must be at least 6 characters long.";
+					}					
+					if(!$uppercase) {
+						$erP =$erP. "<li>Password must include at least one uppercase letter.";
+					}
+					if(!$lowercase) {
+						$erP = $erP."<li>Password must include at least on lowercase letter.";
+					}
+					if(!$number) {
+						$erP = $erP."<li>Password must include at least one number.";
+					}
+					if(!$special_chars) {
+						$erP = $erP."<li>Password must include at least one special character.";
+					}
+					if ($erP === "") {
+						$arr["pass"] = password_hash($arr["pass"], PASSWORD_DEFAULT);
+						$auth->update($usr,$arr);
+						header("location: ".WEBROOT."Public/auth/account");
+					}
+				}
+				else
+				{
+					$erP = "Passwords don't match.";
+				}
+			}
+			if (isset($_SERVER["REQUEST_METHOD"]) && ($_SERVER["REQUEST_METHOD"] === "POST") && $_POST["up"]==="det")
+			{
+				if(isset($_POST["uname"]))
+				{
+					$userArr = array("uname" => $_POST["uname"]);
+					$userArr = $this->secure_form($userArr);
+					if ($usr["uname"] != $userArr["uname"])
+					{
+						$number = preg_match('@[0-9]@', $userArr["uname"]);
+						if($number)
+						{
+							$d=array("erN"=>"name cannot contain numbers or special characthers");
+							$this->set($d);
+						}else{
+							$auth->update($usr,$userArr);
+						}
+					}
+				}
+				if(isset($_POST["sname"]))
+				{
+					$userArr = array("sname" => $_POST["sname"]);
+					$userArr = $this->secure_form($userArr);
+					if ($usr["sname"] != $userArr["sname"])
+					{
+						$number = preg_match('@[0-9]@', $userArr["sname"]);
+						if($number)
+						{
+							$d=array("erSN"=>"Surname cannot contain numbers or special characthers");
+							$this->set($d);
+						}else{
+							$auth->update($usr,$userArr);
+						}
+					}
+				}
+				if(isset($_POST["userN"]))
+				{
+					$userArr = array("userN" => $_POST["userN"]);
+					$userArr = $this->secure_form($userArr);
+					$res = $auth->getUserC($userArr['userN']);
+					if ($usr["userN"] != $userArr["userN"]);
+					{
+						if (filter_var($userArr['userN'],FILTER_VALIDATE_EMAIL))
+						{
+							$d=array('erUN'=>"Username cannot have email format.");
+							$this->set($d);
+						}
+						elseif ($res['nR'] != 0)
+						{
+							$d=array('erUN'=>"Username is already taken");
+							$this->set($d);
+						}else{
+							$auth->update($usr,$userArr);
+						}
+					}
+
+				}
+				if(isset($_POST["email"]))
+				{
+					$userArr = array("email" => $_POST["email"]);
+					$userArr = $this->secure_form($userArr);
+					$res = $auth->getUserC($userArr['email']);
+					if ($usr["email"] != $userArr["email"]);
+					{
+						if (!(filter_var($userArr['email'],FILTER_VALIDATE_EMAIL)))
+						{
+							$d=array('erE'=>"Email must be in email format.");
+							$this->set($d);
+						}
+						elseif ($res['nR'] != 0)
+						{
+							$d=array('erE'=>"Email is already taken");
+							$this->set($d);
+						}else{
+							$auth->update($usr,$userArr);
+						}
+					}
+				}
+				if(isset($_POST["not"]))
+				{
+					$userArr = array("notifications" => $_POST["not"]);
+					$userArr = $this->secure_form($userArr);
+					if ($usr["notifications"] === "")
+					{
+						$usr["notifications"] = "0";
+					}
+					if ($usr["notifications"] != $userArr["notifications"]);
+						$auth->update($usr,$userArr);
+
+				}
+			}
 			$this->set($auth->getUserI($_SESSION['userID']));
 			$this->render("account");
 		}		

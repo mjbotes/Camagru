@@ -10,8 +10,7 @@
 		
 			$retval = mail($rec,$sub,$con,$header);
 
-			if( $retval == true ) {
-				echo "Message sent successfully...";
+			if( $retval != true ) {
 			}else {
 				echo "Message could not be sent...";
 			}
@@ -26,6 +25,24 @@
 			\n\nThank You.\n
 			AI MIKE</p>";
 			$this->email($det['email'], "Email Verification", $con);
+		}
+
+		public function fPass($det, $pass)
+		{
+			$con="<h1>Camagru</h1>\n";
+			$con.="<p>{$det['uname']} {$det['sname']} Your new password is: {$pass}</p>
+			\n\nThank You.\n
+			AI MIKE</p>";
+			$this->email($det['email'], "Forgot Password", $con);
+		}
+
+		public function notify($det)
+		{
+			$con="<h1>Camagru</h1>\n";
+			$con.="<p>{$det['uname']} {$det['sname']} Someone liked or commented on your post</p>
+			\n\nThank You.\n
+			AI MIKE</p>";
+			$this->email($det['email'], "NOTIFICATION", $con);
 		}
 	}
 	?>
